@@ -1,0 +1,522 @@
+import java.util.*;
+
+public class Black_Jack
+{
+   public static void main(String[] args)
+   {
+      //creating variables, scanner, constants, and arrays
+      int card;
+      int nextDeal;
+      final int DEAL_AGAIN = 1;
+      Scanner reader = new Scanner(System.in);
+      int ace;
+      boolean dealAgain = false;
+      int playAgain;
+      final int PLAY_AGAIN = 1;
+      final int CHIPS_START = 100;
+      boolean betAllowed;
+      final int MAX_CARDS = 5;
+      boolean dealCompAgain;
+      boolean aceValue;
+      boolean validResponse;
+      boolean nextRound = false;
+      int numPlayers;
+      int[] bets;
+      int[] count;
+      int[][] pastCards;
+      int[] chips;
+      boolean[] inGame;
+      int highScore = 0;
+      int[] numCards;
+      
+      //verifying input
+      do
+      { 
+         System.out.print("how many players (not including the dealer): ");
+         numPlayers = reader.nextInt();
+      }while(numPlayers <= 0);
+   
+      //initializing arrays chips and bets
+      bets = new int[numPlayers]; 
+      chips = new int[numPlayers];
+      
+      numPlayers += 1; //adding 1 so number of players includes the dealer
+      
+      //initializing arrays count, pastCards, inGame, numCards
+      count = new int[numPlayers];
+      pastCards = new int[numPlayers][MAX_CARDS];
+      inGame = new boolean[numPlayers];
+      numCards = new int[numPlayers];
+      
+      //filling array chips with values
+      for (int i = 0; i < chips.length; i++)
+      {
+         chips[i] = CHIPS_START;
+      }
+      
+      //for the option to play again(improvement)
+      do 
+      {
+         //filling array inGame with values
+         for (int i = 0; i < inGame.length; i++)
+         {
+            inGame[i] = true;
+         }
+      
+         //filling array numCards with values
+         for (int i = 0; i < numCards.length; i++)
+         {
+            numCards[i] = 0;
+         }
+         
+         //betting system
+         for (int i = 0; i < bets.length; i++)
+         {
+            System.out.println("player " + (i + 1) + ",");
+         
+            System.out.println("**********************");
+         
+            //betting system, verifying input
+            do 
+            {
+               //prompting user to enter bet
+               System.out.print("you have " + chips[i] + " chips. How much would you like to bet? ");
+               bets[i] = reader.nextInt();
+            
+               //verifying input
+               if (bets[i] <= chips[i] && bets[i] > 0)
+               {
+                  betAllowed = true;
+                  chips[i] -= bets[i];
+               }
+               else
+               {
+                  betAllowed = false;
+                  System.out.println("invalid bet");
+               }
+            }while(betAllowed == false);   
+         }
+         
+         //dealing cards
+         for (int i = 0; i < count.length; i++)
+         {
+            if(i < count.length - 1) //for players turns
+            {
+               System.out.println("**********************");
+               System.out.println("player " + (i + 1) + "'s turn");
+            
+               //dealing player cards
+               do 
+               {
+                  card = (int) (Math.random() * 13 + 1); //generating random card
+                  pastCards[i][numCards[i]] = card; //adding card to array of user's past cards
+                  numCards[i] += 1;
+               
+                  //determining card's value
+                  switch (card)
+                  {
+                     case 1:
+                        System.out.println("you got an ace");
+                        
+                        //verifying input
+                        do 
+                        {
+                           //prompting user to decide if they want the ace to be worth 1 or 11
+                           System.out.print("would you like the ace to be worth 1 or 11? ");
+                           ace = reader.nextInt(); 
+                        
+                           //verifying input
+                           if (ace == 11 || ace == 1)
+                           {
+                              aceValue = true;
+                              count[i] += ace;
+                           }
+                           else
+                           {
+                              aceValue = false;
+                              System.out.println("invalid value for ace");
+                           }
+                        }while(aceValue == false);
+                        break;
+                     case 2:
+                        System.out.println("you got a two");
+                        count[i] += 2;
+                        break;
+                     case 3:
+                        System.out.println("you got a three");
+                        count[i] += 3;
+                        break;
+                     case 4:
+                        System.out.println("you got a four");
+                        count[i] += 4;
+                        break;
+                     case 5:
+                        System.out.println("you got a five");
+                        count[i] += 5;
+                        break;
+                     case 6:
+                        System.out.println("you got a six");
+                        count[i] += 6;
+                        break;
+                     case 7:
+                        System.out.println("you got a seven");
+                        count[i] += 7;
+                        break;
+                     case 8:
+                        System.out.println("you got an eight");
+                        count[i] += 8;
+                        break;
+                     case 9:
+                        System.out.println("you got a nine");
+                        count[i] += 9;
+                        break;
+                     case 10:
+                        System.out.println("you got a ten");
+                        count[i] += 10;
+                        break;
+                     case 11:
+                        System.out.println("you got a jack");
+                        count[i] += 10;
+                        break;
+                     case 12:
+                        System.out.println("you got a queen");
+                        count[i] += 10;
+                        break;
+                     case 13:
+                        System.out.println("you got a king");
+                        count[i] += 10;
+                        break;
+                  }
+               
+                  //outputting user's count and past cards
+                  System.out.println("your count is " + count[i]);
+                  System.out.println("your past cards are: ");
+               
+                  //outputting past cards
+                  for (int j = 0; j < numCards[i]; j++) 
+                  {
+                     //checking what each card was
+                     switch (pastCards[i][j])
+                     { 
+                        case 1:
+                           System.out.println("ace");                     
+                           break;
+                        case 2:
+                           System.out.println("two");                     
+                           break;
+                        case 3:
+                           System.out.println("three");                    
+                           break;
+                        case 4:
+                           System.out.println("four");                    
+                           break;
+                        case 5:
+                           System.out.println("five");                    
+                           break;
+                        case 6:
+                           System.out.println("six");                  
+                           break;
+                        case 7:
+                           System.out.println("seven");                    
+                           break;
+                        case 8:
+                           System.out.println("eight");                    
+                           break;
+                        case 9:
+                           System.out.println("nine");                    
+                           break;
+                        case 10:
+                           System.out.println("ten");
+                           break;
+                        case 11:
+                           System.out.println("jack");                    
+                           break;
+                        case 12:
+                           System.out.println("queen");                     
+                           break;
+                        case 13:
+                           System.out.println("king");
+                           break;
+                     }
+                  }
+                  
+                  //determining if user gets another deal
+                  if (count[i] < 21)//checking count
+                  { 
+                     if (numCards[i] < MAX_CARDS)//checking if number of cards dealt so far is below the maximum allowed cards
+                     { 
+                        do //verifying input
+                        {
+                           //prompting user to decide if they would like to be dealt another card
+                           System.out.print("would you like to be dealt another card? Enter 1 for yes or 2 for no. ");
+                           nextDeal = reader.nextInt();
+                           
+                           //verifying input
+                           if (nextDeal == 1 || nextDeal == 2)
+                           {
+                              validResponse = true;
+                           }
+                           else
+                           {
+                              validResponse = false;
+                              System.out.println("invalid response");
+                           }
+                        }while (validResponse == false);
+                        
+                        //determining if user wants another deal
+                        if(nextDeal == DEAL_AGAIN)//checking if player wants to be dealt another card
+                        { 
+                           dealAgain = true;
+                        }
+                        else
+                        {
+                           dealAgain = false;
+                        }
+                     }
+                     else
+                     {
+                        dealAgain = false;
+                        System.out.println("number of cards exceeds the maximum allowed cards");
+                     }
+                  }
+                  else
+                  {
+                     dealAgain = false;
+                     if (count[i] > 21) //displaying appropriate message
+                     {
+                        System.out.println("count is greater than 21");
+                     }
+                     else
+                     {
+                        System.out.println("count is 21");
+                     }
+                  }
+                  
+               } while (dealAgain);
+            
+               if (count[i] == 21) //determining who won the round
+               {
+                  System.out.println("player" + (i + 1) + "wins");
+                  inGame[i] = false;
+                  chips[i] += bets[i] * 2;//doubling bet if they won  
+                  System.out.println("you now have " + chips[i] + " chips");        
+               }
+               else if (count[i] > 21)
+               {
+                  System.out.println("player " + (i + 1) + " loses");
+                  inGame[i] = false;
+                  System.out.println("you now have " + chips[i] + " chips");
+               }
+            }
+            else
+            {
+               System.out.println("**********************");
+               System.out.println("dealer's turn");
+            
+               do //dealing computer cards
+               {
+                  card = (int) (Math.random() * 13 + 1);
+                  pastCards[i][numCards[i]] = card;
+                  numCards[i] += 1;
+               
+                  switch(card) //determining the value of the card
+                  {
+                     case 1:
+                        System.out.println("the dealer got an ace");
+                     //determining if ace will be worth 1 or 11 based on it's current count
+                        if ((count[i] + 11) > 21)
+                        {
+                           count[i] += 1;
+                        }
+                        else
+                        {
+                           count[i] += 11;
+                        }
+                        break;
+                     case 2:
+                        System.out.println("the dealer got a two");
+                        count[i] += 2;
+                        break;
+                     case 3:
+                        System.out.println("the dealer got a three");
+                        count[i] += 3;
+                        break;
+                     case 4:
+                        System.out.println("the dealer got a four");
+                        count[i] += 4;
+                        break;
+                     case 5:
+                        System.out.println("the dealer got a five");
+                        count[i] += 5;
+                        break;
+                     case 6:
+                        System.out.println("the dealer got a six");
+                        count[i] += 6;
+                        break;
+                     case 7:
+                        System.out.println("the dealer got a seven");
+                        count[i] += 7;
+                        break;
+                     case 8:
+                        System.out.println("the dealer got an eight");
+                        count[i] += 8;
+                        break;
+                     case 9:
+                        System.out.println("the dealer got a nine");
+                        count[i] += 9;
+                        break;
+                     case 10:
+                        System.out.println("the dealer got a ten");
+                        count[i] += 10;
+                        break;
+                     case 11:
+                        System.out.println("the dealer got a jack");
+                        count[i] += 10;
+                        break;
+                     case 12:
+                        System.out.println("the dealer got a queen");
+                        count[i] += 10;
+                        break;
+                     case 13:
+                        System.out.println("the dealer got a king");
+                        count[i] += 10;
+                        break;
+                  }
+               
+               //outputting dealer's count and past cards
+                  System.out.println("the dealer's count is " + count[i]);
+                  System.out.println("dealer's past cards are: ");
+               
+               //checking what dealer's past cards were based on the array
+                  for (int j = 0; j < numCards[i]; j++)
+                  {
+                     switch (pastCards[i][j])
+                     {
+                        case 1:
+                           System.out.println("ace");                     
+                           break;
+                        case 2:
+                           System.out.println("two");                     
+                           break;
+                        case 3:
+                           System.out.println("three");                    
+                           break;
+                        case 4:
+                           System.out.println("four");                    
+                           break;
+                        case 5:
+                           System.out.println("five");                    
+                           break;
+                        case 6:
+                           System.out.println("six");                  
+                           break;
+                        case 7:
+                           System.out.println("seven");                    
+                           break;
+                        case 8:
+                           System.out.println("eight");                    
+                           break;
+                        case 9:
+                           System.out.println("nine");                    
+                           break;
+                        case 10:
+                           System.out.println("ten");
+                           break;
+                        case 11:
+                           System.out.println("jack");                    
+                           break;
+                        case 12:
+                           System.out.println("queen");                     
+                           break;
+                        case 13:
+                           System.out.println("king");
+                           break;
+                     }
+                  }
+               
+               //determining if dealer gets to be dealt another card
+                  if (count[i] < 17 && numCards[i] < MAX_CARDS)
+                  {
+                     dealCompAgain = true;
+                  }
+                  else
+                  {
+                     dealCompAgain = false;
+                  }
+               }while (dealCompAgain); //determining if dealer gets another deal
+            
+               System.out.println("**********************");
+            
+               if (count[i] > 21)//checking if player won (dealer goes over 21)
+               {
+                  System.out.println("Players wins");
+                  inGame[i] = false;
+                  for (int j = 0; j < inGame.length; j++)//displaying the players that beat the dealer's chips (not including the ones that already got 21)
+                  {
+                     if (inGame[j] == true) //making sure the players haven't already lost
+                     {
+                        chips[j] += bets[j] * 2;
+                        System.out.println("player " + (j + 1) + ", you now have " + chips[j] + " chips");
+                     }
+                  }
+               }
+               else
+               {
+               //checking to see whether player's count or dealer's count was higher
+                  for (int j = 0; j < inGame.length - 1; j++) //subtracting 1 to exclude dealer
+                  {
+                     if (inGame[j] == true) //making sure players haven't already lost
+                     {
+                        if(count[j] > count[i]) //checking if player's count was higher than the dealer's 
+                        {
+                           System.out.println("player " + (j + 1) + " wins");
+                           chips[j] += bets[j] * 2;
+                           System.out.println("you now have " + chips[j] + " chips");
+                        }
+                        else if(count[j] == count[i]) 
+                        {
+                           System.out.println("dealer wins");
+                           System.out.println("player " + (j + 1) + " you now have " + chips[j] + " chips");
+                        }
+                        else 
+                        {
+                           System.out.println("dealer wins");
+                           System.out.println("player " + (j + 1) + " you now have " + chips[j] + " chips");
+                        }
+                     }
+                  }
+               }
+               System.out.println("**********************");
+            }
+         }
+         
+         //giving option of playing again
+         do
+         {
+            //prompting user to decide if they would like to play again
+            System.out.println("would you like to play agian? Enter 1 for yes or 2 for no. ");
+            playAgain = reader.nextInt();
+            
+            if (playAgain == 1 || playAgain == 2) //deatermining if the input is a valid response
+            {
+               validResponse = true;
+            }
+            else
+            {
+               validResponse = false;
+               System.out.println("invalid response");
+            }
+         }while(validResponse == false);
+         
+         if (playAgain == PLAY_AGAIN)//determining if there is a next round or not
+         {
+            nextRound = true;
+         }
+         else
+         {
+            nextRound = false;
+         }
+         
+      } while(nextRound);       
+   }
+}
